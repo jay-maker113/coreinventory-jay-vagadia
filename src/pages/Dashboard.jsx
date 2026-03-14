@@ -1,13 +1,23 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { supabase } from '../lib/supabase'
 import {
-  Package, AlertTriangle, ArrowDownCircle,
-  ArrowUpCircle, ArrowLeftRight, RefreshCw
+  Package,
+  AlertTriangle,
+  ArrowDownCircle,
+  ArrowUpCircle,
+  ArrowLeftRight,
+  RefreshCw,
 } from 'lucide-react'
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, Cell
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
 } from 'recharts'
 
 function KPICard({ icon: Icon, label, value, sub, color, onClick }) {
@@ -40,9 +50,11 @@ export default function Dashboard() {
   })
   const [stockChart, setStockChart] = useState([])
   const [loading, setLoading] = useState(true)
+  const [docFilter, setDocFilter] = useState('all')
 
   async function fetchStats() {
     setLoading(true)
+
     const [
       { count: totalProducts },
       { data: stockData },
@@ -59,12 +71,34 @@ export default function Dashboard() {
 
     const uniqueStock = {}
     stockData?.forEach(row => {
-      if (!uniqueStock[row.product_name]) uniqueStock[row.product_name] = { product_name: row.product_name, quantity_on_hand: 0, reorder_point: row.reorder_point }
+      if (!uniqueStock[row.product_name]) {
+        uniqueStock[row.product_name] = {
+          product_name: row.product_name,
+          quantity_on_hand: 0,
+          reorder_point: row.reorder_point,
+        }
+      }
       uniqueStock[row.product_name].quantity_on_hand += Number(row.quantity_on_hand)
     })
+
     const stockArr = Object.values(uniqueStock)
-    const lowStock = stockArr.filter(p => p.quantity_on_hand > 0 && p.quantity_on_hand <= p.reorder_point).length
-    const outOfStock = stockArr.filter(p => p.quantity_on_hand <= 0).length
+    const lowStock = stockArr.filter(product => product.quantity_on_hand > 0 && product.quantity_on_hand <= product.reorder_point).length
+    const outOfStock = stockArr.filter(product => product.quantity_on_hand <= 0).length
+
+    stockArr.forEach(product => {
+      if (product.quantity_on_hand <= 0) {
+        toast.error(`Out of stock: ${product.product_name}`, {
+          id: `out-${product.product_name}`,
+          duration: 6000,
+        })
+      } else if (product.quantity_on_hand <= product.reorder_point) {
+        toast(`Low stock: ${product.product_name} (${product.quantity_on_hand} remaining)`, {
+          id: `low-${product.product_name}`,
+          icon: '!',
+          duration: 6000,
+        })
+      }
+    })
 
     setStats({
       totalProducts: totalProducts ?? 0,
@@ -75,11 +109,13 @@ export default function Dashboard() {
       pendingTransfers: pendingTransfers ?? 0,
     })
 
-    setStockChart(stockArr.slice(0, 8).map(p => ({
-      name: p.product_name.length > 12 ? p.product_name.slice(0, 12) + '…' : p.product_name,
-      qty: Number(p.quantity_on_hand),
-      low: p.quantity_on_hand <= p.reorder_point && p.quantity_on_hand > 0,
-    })))
+    setStockChart(
+      stockArr.slice(0, 8).map(product => ({
+        name: product.product_name.length > 12 ? `${product.product_name.slice(0, 12)}...` : product.product_name,
+        qty: Number(product.quantity_on_hand),
+        low: product.quantity_on_hand <= product.reorder_point && product.quantity_on_hand > 0,
+      })),
+    )
 
     setLoading(false)
   }
@@ -87,13 +123,14 @@ export default function Dashboard() {
   useEffect(() => {
     fetchStats()
 
-    // Realtime: re-fetch on any stock_ledger insert
     const channel = supabase
       .channel('dashboard-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'stock_ledger' }, fetchStats)
       .subscribe()
 
-    return () => supabase.removeChannel(channel)
+    return () => {
+      supabase.removeChannel(channel)
+    }
   }, [])
 
   return (
@@ -112,7 +149,6 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* KPI Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <KPICard icon={Package} label="Total Products" value={stats.totalProducts} color="bg-indigo-600" onClick={() => navigate('/products')} />
         <div className={stats.lowStock > 0 ? 'animate-pulse' : ''}>
@@ -126,7 +162,25 @@ export default function Dashboard() {
         <KPICard icon={ArrowLeftRight} label="Pending Transfers" value={stats.pendingTransfers} color="bg-teal-600" onClick={() => navigate('/transfers')} />
       </div>
 
-      {/* Stock Chart */}
+      <div className="flex gap-2 mb-6 flex-wrap">
+        {['all', 'receipts', 'deliveries', 'transfers', 'adjustments'].map(filter => (
+          <button
+            key={filter}
+            onClick={() => {
+              setDocFilter(filter)
+              navigate(`/${filter === 'all' ? 'dashboard' : filter}`)
+            }}
+            className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors capitalize ${
+              docFilter === filter
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:text-white'
+            }`}
+          >
+            {filter === 'all' ? 'All Operations' : filter}
+          </button>
+        ))}
+      </div>
+
       {stockChart.length > 0 && (
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
           <h2 className="text-sm font-semibold text-gray-300 mb-4">Stock Levels by Product</h2>
@@ -140,8 +194,8 @@ export default function Dashboard() {
                 itemStyle={{ color: '#a5b4fc' }}
               />
               <Bar dataKey="qty" radius={[4, 4, 0, 0]}>
-                {stockChart.map((entry, i) => (
-                  <Cell key={i} fill={entry.low ? '#ca8a04' : '#4f46e5'} />
+                {stockChart.map((entry, index) => (
+                  <Cell key={index} fill={entry.low ? '#ca8a04' : '#4f46e5'} />
                 ))}
               </Bar>
             </BarChart>

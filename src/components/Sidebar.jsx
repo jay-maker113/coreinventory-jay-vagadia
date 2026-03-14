@@ -9,6 +9,7 @@ import {
   ClipboardList,
   History,
   Settings,
+  User,
   LogOut,
   Boxes
 } from 'lucide-react'
@@ -23,6 +24,7 @@ const nav = [
   { to: '/adjustments', icon: ClipboardList, label: 'Adjustments' },
   { to: '/history', icon: History, label: 'Move History' },
   { to: '/settings', icon: Settings, label: 'Settings' },
+  { to: '/profile', icon: User, label: 'My Profile' },
 ]
 
 export default function Sidebar() {

@@ -25,7 +25,7 @@ export default function Auth() {
       else setMessage('Check your email to confirm your account.')
     } else if (mode === 'reset') {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin,
+        redirectTo: `${window.location.origin}/reset-password`,
       })
       if (error) setError(error.message)
       else setMessage('Password reset email sent. Check your inbox.')
