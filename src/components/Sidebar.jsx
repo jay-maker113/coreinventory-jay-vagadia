@@ -12,6 +12,7 @@ import {
   LogOut,
   Boxes
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 const nav = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -31,6 +32,14 @@ export default function Sidebar() {
     await supabase.auth.signOut()
     navigate('/auth')
   }
+
+  const [email, setEmail] = useState('')
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setEmail(user?.email ?? '')
+    })
+  }, [])  
 
   return (
     <aside className="w-60 bg-gray-900 border-r border-gray-800 flex flex-col">
@@ -62,6 +71,9 @@ export default function Sidebar() {
 
       {/* Logout */}
       <div className="px-3 py-4 border-t border-gray-800">
+        <div className="px-3 py-2 mb-1">
+          <p className="text-xs text-gray-500">{email}</p>
+        </div>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium text-gray-400 hover:bg-gray-800 hover:text-white transition-colors"

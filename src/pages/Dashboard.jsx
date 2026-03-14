@@ -115,8 +115,12 @@ export default function Dashboard() {
       {/* KPI Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
         <KPICard icon={Package} label="Total Products" value={stats.totalProducts} color="bg-indigo-600" onClick={() => navigate('/products')} />
-        <KPICard icon={AlertTriangle} label="Low Stock" value={stats.lowStock} sub="At or below reorder point" color="bg-yellow-600" onClick={() => navigate('/products')} />
-        <KPICard icon={AlertTriangle} label="Out of Stock" value={stats.outOfStock} sub="Zero quantity" color="bg-red-600" onClick={() => navigate('/products')} />
+        <div className={stats.lowStock > 0 ? 'animate-pulse' : ''}>
+          <KPICard icon={AlertTriangle} label="Low Stock" value={stats.lowStock} sub="At or below reorder point" color="bg-yellow-600" onClick={() => navigate('/products')} />
+        </div>
+        <div className={stats.outOfStock > 0 ? 'animate-pulse' : ''}>
+          <KPICard icon={AlertTriangle} label="Out of Stock" value={stats.outOfStock} sub="Zero quantity" color="bg-red-600" onClick={() => navigate('/products')} />
+        </div>
         <KPICard icon={ArrowDownCircle} label="Pending Receipts" value={stats.pendingReceipts} color="bg-blue-600" onClick={() => navigate('/receipts')} />
         <KPICard icon={ArrowUpCircle} label="Pending Deliveries" value={stats.pendingDeliveries} color="bg-purple-600" onClick={() => navigate('/deliveries')} />
         <KPICard icon={ArrowLeftRight} label="Pending Transfers" value={stats.pendingTransfers} color="bg-teal-600" onClick={() => navigate('/transfers')} />
