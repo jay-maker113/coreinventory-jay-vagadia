@@ -50,7 +50,7 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2 px-5 py-5 border-b border-gray-800">
         <Boxes className="text-indigo-400 w-6 h-6" />
-        <span className="text-lg font-bold text-white tracking-tight">CoreInventory</span>
+        <span className="text-lg font-bold text-white tracking-tight">StockFlow: CoreInventory</span>
       </div>
 
       {/* Nav */}
