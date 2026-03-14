@@ -8,6 +8,7 @@ import {
   ArrowLeftRight,
   ClipboardList,
   History,
+  Sparkles,
   Settings,
   User,
   LogOut,
@@ -23,6 +24,7 @@ const nav = [
   { to: '/transfers', icon: ArrowLeftRight, label: 'Transfers' },
   { to: '/adjustments', icon: ClipboardList, label: 'Adjustments' },
   { to: '/history', icon: History, label: 'Move History' },
+  { to: '/ai', icon: Sparkles, label: 'AI Assistant' },
   { to: '/settings', icon: Settings, label: 'Settings' },
   { to: '/profile', icon: User, label: 'My Profile' },
 ]

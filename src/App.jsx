@@ -10,12 +10,19 @@ import Deliveries from './pages/Deliveries'
 import Transfers from './pages/Transfers'
 import Adjustments from './pages/Adjustments'
 import MoveHistory from './pages/MoveHistory'
+import AIAssistant from './pages/AIAssistant'
 import Settings from './pages/Settings'
 import ResetPassword from './pages/ResetPassword'
 import Profile from './pages/Profile'
 
 function AppRoutes() {
   const [session, setSession] = useState(undefined)
+  const [aiMessages, setAiMessages] = useState([
+    {
+      role: 'assistant',
+      content: "Hi! I'm your inventory assistant. Ask me anything about your stock, orders, or operations.",
+    },
+  ])
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -60,6 +67,7 @@ function AppRoutes() {
           <Route path="/transfers" element={<Transfers />} />
           <Route path="/adjustments" element={<Adjustments />} />
           <Route path="/history" element={<MoveHistory />} />
+          <Route path="/ai" element={<AIAssistant messages={aiMessages} setMessages={setAiMessages} />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
