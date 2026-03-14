@@ -14,6 +14,7 @@ StockFlow replaces paper registers and Excel sheets with a centralized, real-tim
 
 ## Live Demo
 
+- **App:** https://stockflow-alpha.vercel.app
 - **Demo Video:** https://www.loom.com/share/82a306487f5940359853d71267b11923
 - **GitHub:** [https://github.com/jay-maker113/coreinventory-jay-vagadia](https://github.com/jay-maker113/coreinventory-jay-vagadia)
 
@@ -32,6 +33,7 @@ StockFlow replaces paper registers and Excel sheets with a centralized, real-tim
 | Icons | Lucide React |
 | AI | Groq (Llama 3.1 8B Instant) |
 | Notifications | React Hot Toast |
+| Hosting | Vercel |
 
 ---
 
@@ -144,6 +146,7 @@ VITE_GROQ_API_KEY=your-groq-key
 4. Paste and run it - creates all 13 tables, the `stock_levels` view, and seeds a default warehouse
 5. Go to Project Settings -> API -> copy your Project URL and anon key into `.env`
 6. Go to Authentication -> URL Configuration -> set Site URL to `http://localhost:5173` and add `http://localhost:5173/reset-password` to Redirect URLs
+7. Get a free Groq API key at [console.groq.com](https://console.groq.com) and add it to `.env`
 
 ---
 
