@@ -15,6 +15,7 @@ StockFlow replaces paper registers and Excel sheets with a centralized, real-tim
 ## Live Demo
 
 - **App:** https://stockflow-alpha.vercel.app
+  > **Note:** Built for desktop. If opening on mobile, enable "Desktop site" in your browser settings for the best experience.
 - **Demo Video:** https://www.loom.com/share/82a306487f5940359853d71267b11923
 - **GitHub:** [https://github.com/jay-maker113/coreinventory-jay-vagadia](https://github.com/jay-maker113/coreinventory-jay-vagadia)
 
